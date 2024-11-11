@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>图片自动翻页</title>
+<!-- jQuery 文件 -->
+<script src="./jquery-3.6.1.min.js"></script>
+
+<!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+<link rel="stylesheet" href="./bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+<!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+<link rel="stylesheet" href="./bootstrap-theme.min.css" integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
+
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script src="./bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+    <style type="text/css">
+    .imgCon{
+        width: 100%;
+    }
+    .imgCon img{
+        width: 100%;
+    }
+    #settings{
+        position: fixed;
+        bottom: 10px;
+    }
+    .btn-group{
+        margin: 10px;
+    }
+    #show span{
+        font-size: 80px;
+        font-style: italic;
+        color: #e2370d;
+    }
+    </style>
+</head>
+<body>
+<!--<div  id="control">-->
+<!--     <form action="/">-->
+<!--        <fieldset>-->
+<!--        <legend>循环切换页面时间</legend>-->
+<!--        First name:<br>-->
+<!--        <input type="text" name="秒" value="300">-->
+<!--        <br>-->
+<!--        Last name:<br>-->
+<!--        <input type="text" name="lastname" value="Mouse">-->
+<!--        <br><br>-->
+<!--        <input type="submit" value="Submit"></fieldset>-->
+<!--    </form>-->
+<!--</div>-->
+<div class="row">
+    <div class="imgCon">
+        　<img src="./1.jpg" id="imgChange" class="imgChange"/>
+    </div>　
+</div>
+
+<div id="settings" class="row">
+  <div  class="col-lg-2">
+    <div class="input-group">
+      <span class="input-group-addon">设置</span>
+      <input id="ts" type="text" class="form-control" aria-label="Amount (to the nearest dollar)" value="5">
+      <span class="input-group-addon">秒翻页</span>
+    </div>
+    <div  class="btn-group" role="group" aria-label="...">
+      <button id="start" type="button" class="btn btn-warning  btn-setting">开始</button>
+      <button id="stop" type="button" class="btn btn-primary  btn-setting">暂停</button>
+    </div>
+  </div>
+  <div class="col-lg-1">
+     <form id="form1" runat="server">
+     <div id="show">
+         <span>00:00:00</span>
+     </div>
+     </form>
+  </div>
+    <div class="col-lg-1"><span>抓紧对答案</span></div>
+</div><!-- /.row -->
+
+
+<script type="text/javascript">
+        var ftimer;//定义翻页计时器
+        function fanye(mseconds) {
+        clearInterval(ftimer);
+        console.log(mseconds,"毫秒翻页");
+        ftimer = setInterval(function () {
+            // var hScroolTop = document.documentElement.scrollTop;
+            // if (document.documentElement.scrollHeight > (document.documentElement.scrollTop + document.documentElement.clientHeight)) {
+            //     hScroolTop += 6;
+            // } else {
+            //     hScroolTop = 0;
+            // }
+            // document.documentElement.scrollTop = hScroolTop;//
+            TimeDown("show",mseconds);
+            if (document.documentElement.scrollHeight > (document.documentElement.scrollTop + document.documentElement.clientHeight+20)) {
+                document.documentElement.scrollTop += document.documentElement.clientHeight
+                console.log(document.documentElement.scrollTop);
+            } else {
+                document.documentElement.scrollTop = 0
+            }
+            console.log(document.documentElement.scrollTop,document.documentElement.clientHeight,document.documentElement.scrollHeight);
+        },mseconds)
+    };
+    var timer1;//倒计时计时器
+    $("#start").click(function () {
+      clearTimeout(timer1);//清除计时器
+      var ts = $("#ts").val();
+      var mseconds = parseInt(ts) * 1000
+
+      fanye(mseconds);
+      TimeDown("show",mseconds);
+
+    });
+    $("#stop").click(function () {
+        clearInterval(ftimer);
+        clearTimeout(timer1);
+    })
+    // TimeDown("show", 3600000)
+
+/*时间倒计时 TimeDown.js-------------------------------------------------------------------------*/
+  function TimeDown(id, value) {
+
+    //倒计时的总秒数
+    var totalSeconds = parseInt(value / 1000);
+
+    //取模（余数）
+    var modulo = totalSeconds % (60 * 60 * 24);
+    //小时数
+    var hours = Math.floor(modulo / (60 * 60));
+    modulo = modulo % (60 * 60);
+    //分钟
+    var minutes = Math.floor(modulo / 60);
+    //秒
+    var seconds = modulo % 60;
+
+    hours = hours.toString().length == 1 ? '0' + hours : hours;
+    minutes = minutes.toString().length == 1 ? '0' + minutes : minutes;
+    seconds = seconds.toString().length == 1 ? '0' + seconds : seconds;
+
+    //输出到页面
+    // document.getElementById(id).innerHTML = hours + ":" + minutes + ":" + seconds;
+    $("#show span").text(hours + ":" + minutes + ":" + seconds);
+    //延迟一秒执行自己
+    if(hours == "00" && minutes == "00" && parseInt(seconds)-1<0){
+
+    }else{
+      timer1 = setTimeout(function () {
+        TimeDown(id, value-1000);
+      }, 1000)
+    }
+
+  }
+</script>
+</body>
+</html>
